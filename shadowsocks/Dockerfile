@@ -7,12 +7,15 @@ ARG TZ='Asia/Shanghai'
 ENV TZ $TZ
 ENV SS_LIBEV_VERSION 3.1.1 
 ENV KCP_VERSION 20171113
+ENV U2R_VERSION 20171125.0
 ENV SS_DOWNLOAD_URL https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$SS_LIBEV_VERSION/shadowsocks-libev-$SS_LIBEV_VERSION.tar.gz
 ENV OBFS_DOWNLOAD_URL https://github.com/shadowsocks/simple-obfs.git
 ENV KCP_DOWNLOAD_URL https://github.com/xtaci/kcptun/releases/download/v$KCP_VERSION/kcptun-linux-amd64-$KCP_VERSION.tar.gz
+ENV U2R_DOWNLOAD_URL https://github.com/wangyu-/udp2raw-tunnel/releases/download/$U2R_VERSION/udp2raw_binaries.tar.gz
+
 
 RUN apk upgrade --update \
-    && apk add bash tzdata libsodium \
+    && apk add bash tzdata libsodium haveged\
     && apk add --virtual .build-deps \
         autoconf \
         automake \
@@ -45,6 +48,8 @@ RUN apk upgrade --update \
     && tar -zxf kcptun-linux-amd64-${KCP_VERSION}.tar.gz \
     && mv server_linux_amd64 /usr/bin/kcpserver \
     && mv client_linux_amd64 /usr/bin/kcpclient \
+    && curl -sSLO ${U2R_DOWNLOAD_URL} \
+    && tar -zxf udp2raw_binaries.tar.gz -C /usr/bin/ \
     && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone \
     && runDeps="$( \
@@ -59,6 +64,7 @@ RUN apk upgrade --update \
         shadowsocks-libev-${SS_LIBEV_VERSION}.tar.gz \
         shadowsocks-libev-${SS_LIBEV_VERSION} \
         simple-obfs \
+        udp2raw_binaries.tar.gz \
         /var/cache/apk/*
 
 ADD entrypoint.sh /entrypoint.sh
