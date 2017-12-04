@@ -15,7 +15,7 @@ ENV U2R_DOWNLOAD_URL https://github.com/wangyu-/udp2raw-tunnel/releases/download
 
 
 RUN apk upgrade --update \
-    && apk add bash tzdata libsodium haveged\
+    && apk add bash tzdata libsodium haveged iptables\
     && apk add --virtual .build-deps \
         autoconf \
         automake \
